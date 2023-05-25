@@ -839,6 +839,52 @@ static void PrintAbstractClassStub(
       "}\n\n");
 }
 
+static void PrintAbstractClassStubV2(const ServiceDescriptor* service,
+    std::map<std::string, std::string>* vars,
+    Printer* p) {
+  const std::string service_name = service->name();
+  (*vars)["service_name"] = service_name;
+
+  if (service->options().deprecated()) {
+    p->Print(*vars, "@$Deprecated$\n");
+  }
+  p->Print(
+      *vars,
+      "public static abstract class $service_name$ImplBaseV2 extends $service_name$ImplBase {\n"
+  );
+
+  for (int i = 0; i < service->method_count(); ++i) {
+    const MethodDescriptor* method = service->method(i);
+    if (method->client_streaming()) {
+      continue;
+    }
+    (*vars)["method_id_name"] = MethodIdFieldName(method);
+    (*vars)["lower_method_name"] = LowerMethodName(method);
+    (*vars)["input_type"] = MessageFullJavaName(method->input_type());
+    (*vars)["output_type"] = MessageFullJavaName(method->output_type());
+    p->Print(
+        *vars,
+        "\n"
+        "    public abstract $output_type$ $lower_method_name$(\n"
+        "        $input_type$ request) throws $Throwable$;\n"
+        "\n"
+        "    @$Override$ public final void $lower_method_name$($input_type$ request,\n"
+        "        $StreamObserver$<$output_type$> responseObserver) {\n"
+        "        try {\n"
+        "            $output_type$ response = $lower_method_name$(request);\n"
+        "            responseObserver.onNext(response);\n"
+        "            responseObserver.onCompleted();\n"
+        "        } catch ($Throwable$ t) {\n"
+        "            $Throwables$.throwIfUnchecked(t);\n"
+        "            throw new $UncheckedExecutionException$(\"GRPC_INTERNAL\", t);\n"
+        "        }\n"
+        "    }\n"
+    );
+  }
+
+  p->Print(*vars, "}\n\n");
+}
+
 static bool CompareMethodClientStreaming(const MethodDescriptor* method1,
                                          const MethodDescriptor* method2)
 {
@@ -1197,6 +1243,7 @@ static void PrintService(const ServiceDescriptor* service,
 
   PrintStub(service, vars, p, ASYNC_INTERFACE);
   PrintAbstractClassStub(service, vars, p);
+  PrintAbstractClassStubV2(service, vars, p);
   PrintStub(service, vars, p, ASYNC_CLIENT_IMPL);
   PrintStub(service, vars, p, BLOCKING_CLIENT_IMPL);
   PrintStub(service, vars, p, FUTURE_CLIENT_IMPL);
@@ -1253,6 +1300,9 @@ void GenerateService(const ServiceDescriptor* service,
   vars["GrpcGenerated"] = "io.grpc.stub.annotations.GrpcGenerated";
   vars["ListenableFuture"] =
       "com.google.common.util.concurrent.ListenableFuture";
+  vars["Throwable"] = "java.lang.Throwable";
+  vars["Throwables"] = "com.google.common.base.Throwables";
+  vars["UncheckedExecutionException"] = "com.google.common.util.concurrent.UncheckedExecutionException";
 
   Printer printer(out, '$');
   std::string package_name = ServiceJavaPackage(service->file());
