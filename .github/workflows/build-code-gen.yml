@@ -17,4 +17,6 @@ jobs:
         export CXXFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
         export CPPFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
         export PKG_CONFIG_PATH="/usr/local/Cellar/protobuf@21/21.12/lib/pkgconfig" 
-        cd compiler && ../gradlew java_pluginExecutable -PskipAndroid=true
+        cd compiler
+        ../gradlew java_pluginExecutable -PskipAndroid=true
+        ../gradlew publishToMavenLocal -PskipAndroid=true
