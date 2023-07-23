@@ -1,22 +1,22 @@
-name: protoc-gen-grpc-java
-run-name: build protoc-gen-grpc-java
-on:
-  push:
-    branchs: 
-      - 'bj-custom'
-jobs:
-  build:
-    runs-on: macos-12-xl
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install ProctoBuf
-      run: brew install protobuf@21
-    - name: Build
-      run: |
-        export LDFLAGS="-L/usr/local/Cellar/protobuf@21/21.12/lib"
-        export CXXFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
-        export CPPFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
-        export PKG_CONFIG_PATH="/usr/local/Cellar/protobuf@21/21.12/lib/pkgconfig" 
-        cd compiler
-        ../gradlew java_pluginExecutable -PskipAndroid=true
-        ../gradlew publishToMavenLocal -PskipAndroid=true
+# name: protoc-gen-grpc-java
+# run-name: build protoc-gen-grpc-java
+# on:
+#   push:
+#     branchs: 
+#       - 'bj-custom'
+# jobs:
+#   build:
+#     runs-on: macos-12-xl
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Install ProctoBuf
+#       run: brew install protobuf@21
+#     - name: Build
+#       run: |
+#         export LDFLAGS="-L/usr/local/Cellar/protobuf@21/21.12/lib"
+#         export CXXFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
+#         export CPPFLAGS="-I/usr/local/Cellar/protobuf@21/21.12/include" 
+#         export PKG_CONFIG_PATH="/usr/local/Cellar/protobuf@21/21.12/lib/pkgconfig" 
+#         cd compiler
+#         ../gradlew java_pluginExecutable -PskipAndroid=true
+#         ../gradlew publishToMavenLocal -PskipAndroid=true
