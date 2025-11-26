@@ -49,6 +49,9 @@ model {
                 }
             }
         }
+        clang(Clang) {
+            target("aarch_64") {}
+        }
         gcc(Gcc) {
             target("ppcle_64") {
                 cppCompiler.executable = 'powerpc64le-linux-gnu-g++'
@@ -63,8 +66,6 @@ model {
                 linker.executable = 's390x-linux-gnu-g++'
             }
             target("loongarch_64")
-        }
-        clang(Clang) {
         }
     }
 
