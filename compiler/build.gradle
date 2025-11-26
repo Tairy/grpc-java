@@ -55,8 +55,8 @@ model {
                 linker.executable = 'powerpc64le-linux-gnu-g++'
             }
             target("aarch_64") {
-                cppCompiler.executable = 'aarch64-linux-gnu-g++'
-                linker.executable = 'aarch64-linux-gnu-g++'
+                cppCompiler.executable = 'g++'
+                linker.executable = 'g++'
             }
             target("s390_64") {
                 cppCompiler.executable = 's390x-linux-gnu-g++'
